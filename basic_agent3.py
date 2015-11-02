@@ -55,20 +55,7 @@ class Agent:
         representing the utility function of the board.
         """
         board=state[0]
-        player=state[1]
-        score=board.get_score()
-        if score == 0 :
-            return 0
-        if player > 0 :
-            if score < 0 :
-                return 1
-            else:
-                return -1
-        if player < 0:
-            if score > 0 :
-                return 1
-            else:
-                return -1
+        return board.get_score()
 
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
