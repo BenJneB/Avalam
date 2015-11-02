@@ -37,8 +37,9 @@ class Agent:
         board=state[0]
         player=state[1]
         stepnumber=state[2]
-        for action in Board.get_actions():
-            yield (action,(board.clone().play_action(action),(-1)*player,stepnumber+1)) "OBLIGE DE FAIRE CLONE????"
+        for action in board.get_actions():
+            yield (action,(board.clone().play_action(action),(-1)*player,stepnumber+1)) 
+            """OBLIGE DE FAIRE CLONE????"""
 
     def cutoff(self, state, depth):
         """The cutoff function returns true if the alpha-beta/minimax
