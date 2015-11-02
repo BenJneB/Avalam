@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Avalam agent.
-Copyright (C) 2015, <<<<<<<<<<< YOUR NAMES HERE >>>>>>>>>>>
+Copyright (C) 2015, DAUBRY BENJAMIN & FICHEFET PIERRICK
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
