@@ -34,7 +34,11 @@ class Agent:
         p is the player to play the next move and st is the next
         step number.
         """
-        pass
+        board=state[0]
+        player=state[1]
+        stepnumber=state[2]
+        for action in Board.get_actions()
+            yield (action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
 
     def cutoff(self, state, depth):
         """The cutoff function returns true if the alpha-beta/minimax
