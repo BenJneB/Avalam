@@ -38,7 +38,7 @@ class Agent:
         player=state[1]
         stepnumber=state[2]
         for action in board.get_actions():
-            yield (action,(board.clone().play_action(action),(-1)*player,stepnumber+1)) 
+            yield (action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
             """OBLIGE DE FAIRE CLONE????"""
 
     def cutoff(self, state, depth):
@@ -46,7 +46,16 @@ class Agent:
         search has to stop; false otherwise.
         """
         board=state[0]
-        if board.is_finished() or depth >=2:
+        stepnumber=state[2]
+        maxd=2
+        maxt=2
+        if stepnumber>=6:
+            maxd=3
+        elif stepnumber >=15:
+            maxd=5
+        elif stepnumber >= 20:
+            maxd=10
+        if board.is_finished() or depth >= maxt:
             return True
         return False
 
@@ -55,14 +64,43 @@ class Agent:
         representing the utility function of the board.
         """
         board=state[0]
-        score=board.get_score()
-        if score >0:
-            evalu=1
-        elif score <0:
-            evalu=-1
-        else:
-            evalu=0
-        return evalu
+        tower=0
+        towMax=0
+        towIsol=0
+        for i in range(board.rows):
+            for j in range(board.columns):
+                """number of tower for each player"""
+                if board.m[i][j] < 0:
+                    tower -= 1
+                elif board.m[i][j] > 0:
+                    tower += 1
+
+                """number of tower (height:5) for each player"""
+                if board.m[i][j] == -5:
+                    towMax -= 1
+                elif board.m[i][j] == 5:
+                    towMax += 1
+                number=abs(board.m[i][j])
+                countNeigh=0
+                countPoss=0
+                for k in range(i-1,i+2):
+                    for l in range(j-1,j+2):
+                        """new X Y in bounds and it is a tower (not empty) with less than 5 pion"""
+                        if (k>=0 and k<=board.rows-1 and l>=0 and l<=board.columns-1):
+                            if (board.m[k][l]!=0 and abs(board.m[k][l])!=5):
+                                if (k!=i and l!=j):
+                                    """count the number of neighbour"""
+                                    countNeigh+=1
+                                    number2=abs(board.m[k][l])
+                                    if (number+number2<=5):
+                                        """count the number of possible move to have a tower"""
+                                        countPoss+=1
+
+                if (countNeigh==0 or countPoss==0):
+                    towIsol+=board.m[i][j]
+
+        return tower + 5*towMax + towIsol
+    passed=False
 
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
@@ -70,6 +108,7 @@ class Agent:
         It must return an action representing the move the player
         will perform.
         """
+
         self.time_left = time_left
         newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
         state = (newBoard, player, step)
