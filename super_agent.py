@@ -37,8 +37,23 @@ class Agent:
         board=state[0]
         player=state[1]
         stepnumber=state[2]
+        allMove=[]
         for action in board.get_actions():
-            yield (action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
+            x1=action[0]
+            x2=action[2]
+            y1=action[1]
+            y2=action[3]
+            if (board.m[x1][y1] >0 ):
+                s=1
+            else:
+                s=-1
+            n1=board.m[x1][y1]
+            n2=board.m[x2][y2]
+            number=s*(abs(n1)+abs(n2))
+            if((number==5 and player>0) or (number==-5 and player<0) or abs(number)!=5):
+                allMove.append(action)
+        for move in allMove:
+            yield (move,(board.clone().play_action(move),(-1)*player,stepnumber+1))
             """OBLIGE DE FAIRE CLONE????"""
 
     def cutoff(self, state, depth):
@@ -47,9 +62,8 @@ class Agent:
         """
         board=state[0]
         stepnumber=state[2]
-        maxd=2
         maxt=2
-        if stepnumber>=6:
+        if stepnumber>=10:
             maxd=3
         elif stepnumber >=15:
             maxd=5
@@ -100,7 +114,6 @@ class Agent:
                     towIsol+=board.m[i][j]
 
         return tower + 5*towMax + towIsol
-    passed=False
 
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
