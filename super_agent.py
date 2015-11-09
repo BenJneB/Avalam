@@ -59,16 +59,27 @@ class Agent:
             number=s*(abs(n1)+abs(n2))
             if (player == self.player and number == -5 ):
                 continue
+            """
             elif (player == self.player):
+                bad=False
                 for i in range(x2-1,x2+2):
                     for j in range(y2-1,y2+2):
-                        n3=board.m[i][j]
-                        if n3>0:
-                            s2=1
-                        else:
-                            s2=-1
-                        number2=s2*(abs(n3)+abs(number))
-                        
+                        if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and (i!=x1 and j!=y1) and (i!=x2 and j!=y2)):
+                            n3=board.m[i][j]
+                            if n3>0:
+                                s2=1
+                            else:
+                                s2=-1
+                            number2=s2*(abs(n3)+abs(number))
+                            if (number2 == -5):
+                                bad=True
+                if (bad==True):
+                    continue
+                else:
+                    new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
+                    listAction.append(new)
+                    yield new
+                """
             else:
                 new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
                 listAction.append(new)
