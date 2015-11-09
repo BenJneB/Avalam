@@ -28,9 +28,6 @@ class Agent:
     def __init__(self, name="Agent"):
         self.name = name
         self.passed=False
-
-    def bysucc_key(state):
-        return self.evaluate(state[1][0])
     
     def successors(self, state):
         """The successors function must return (or yield) a list of
@@ -41,6 +38,11 @@ class Agent:
         step number.
         """
         board=state[0]
+        player=state[1]
+        stepnumber=state[2]
+        for action in board.get_actions():
+            yield (action,(board.clone().play_action(action),(-1)*player,stepnumber+1)) 
+        """board=state[0]
         player=state[1]
         stepnumber=state[2]
         allMove=[]
@@ -55,19 +57,19 @@ class Agent:
                 s=1
             else:
                 s=-1
-            """if (s<0 and player>0) or (s>0 and player<0):
-                continue"""
+            """"""if (s<0 and player>0) or (s>0 and player<0):
+                continue""""""
 
-            """print("player",player)
-            print("n1",n1)"""
+            """"""print("player",player)
+            print("n1",n1)""""""
             number=s*(abs(n1)+abs(n2))
-            """if((number==5 and player>0) or (number==-5 and player<0) or abs(number)<5):
+            """"""if((number==5 and player>0) or (number==-5 and player<0) or abs(number)<5):
                 allMove.append(action)
-                continue"""
+                continue""""""
             if((number==5 and player<0) or (number==-5 and player >0)):
                 continue
             allMove.append(action)
-            """ if ((number<0 and player<0) or (number >0 and player >0)):
+            """ """if ((number<0 and player<0) or (number >0 and player >0)):
                 countGood=0
                 for i in range(x2-1,x2+2):
                     for j in range(y2-1,y2+2):
@@ -81,7 +83,7 @@ class Agent:
                             if ((number2>0 and player<0) or (number2<0 and player>0)):
                                 countGood+=1
                 if (countGood==0):
-                    allMove.append(action)"""
+                    allMove.append(action)""""""
         semFinL=[]
         inf = float("inf")
         curValA=(-inf)
@@ -102,7 +104,7 @@ class Agent:
             for move in board.get_actions():
                 semFinL.append((move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
         for e in semFinL:
-            yield e
+            yield e"""
         """OBLIGE DE FAIRE CLONE????"""
 
     def cutoff(self, state, depth):
@@ -166,7 +168,7 @@ class Agent:
                 if (countNeigh==0 or countPoss==0):
                     towIsol+=board.m[i][j]"""
 
-        return tower + 5*towMax + towIsol
+        return tower + 5*towMax + 2.5*towIsol
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
         to the board, player and time left provided as input.
