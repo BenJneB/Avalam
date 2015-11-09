@@ -21,6 +21,7 @@ import avalam
 import minimax
 import time
 
+
 class Agent:
     """This is the skeleton of an agent to play the Avalam game."""
 
@@ -28,6 +29,9 @@ class Agent:
         self.name = name
         self.passed=False
 
+    def bysucc_key(state):
+        return self.evaluate(state[1][0])
+    
     def successors(self, state):
         """The successors function must return (or yield) a list of
         pairs (a, s) in which a is the action played to reach the
@@ -78,12 +82,27 @@ class Agent:
                                 countGood+=1
                 if (countGood==0):
                     allMove.append(action)"""
+        semFinL=[]
+        inf = float("inf")
+        curValA=(-inf)
+        curValB=inf
         if (len(allMove)>0):
             for move in allMove:
-                yield (move,(board.clone().play_action(move),(-1)*player,stepnumber+1))
+                temp=self.evaluate((board.clone().play_action(move),(-1)*player,stepnumber+1))
+                if(player>0 and curValA<temp):
+                    print("alphabetter",curValA,temp)
+                    curValA=temp
+                    semFinL.insert(0,(move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
+                elif(player<0 and curValB>temp):
+                    curValB=temp
+                    semFinL.insert(0,(move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
+                else:
+                    semFinL.append((move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
         else:
             for move in board.get_actions():
-                yield (move,(board.clone().play_action(move),(-1)*player,stepnumber+1))
+                semFinL.append((move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
+        for e in semFinL:
+            yield e
         """OBLIGE DE FAIRE CLONE????"""
 
     def cutoff(self, state, depth):
@@ -163,6 +182,7 @@ class Agent:
         newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
         state = (newBoard, player, step)
         return minimax.search(state, self)
+
 
 
 if __name__ == "__main__":
