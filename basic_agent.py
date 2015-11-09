@@ -50,6 +50,7 @@ class Agent:
             return True
         return False
 
+    
     def evaluate(self, state):
         """The evaluate function must return an integer value
         representing the utility function of the board.
