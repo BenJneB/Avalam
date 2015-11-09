@@ -59,8 +59,11 @@ class Agent:
             number=s*(abs(n1)+abs(n2))
             if (player == self.player and number == -5 ):
                 continue
-            """
-            elif (player == self.player):
+            else:
+                new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
+                listAction.append(new)
+                yield new
+            """elif (player == self.player):
                 bad=False
                 for i in range(x2-1,x2+2):
                     for j in range(y2-1,y2+2):
@@ -79,11 +82,8 @@ class Agent:
                     new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
                     listAction.append(new)
                     yield new
-                """
-            else:
-                new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
-                listAction.append(new)
-                yield new
+            """
+
          
         if len(listAction)== 0 :
             #for e in listAction:
@@ -191,7 +191,7 @@ class Agent:
         """
         board=state[0]
         tower=0
-        towMax = 0
+        towMax=0
         towIsol=0
         for i in range(board.rows):
             for j in range(board.columns):
@@ -232,15 +232,6 @@ class Agent:
                     towIsol+=board.m[i][j]"""
 
         return tower + 5*towMax + 5*towIsol
-
-                if(not board.is_tower_movable(i,j)):
-                	if board.m[i][j] < 0:
-                		towIsol -= 1
-                	elif board.m[i][j] > 0:
-                		towIsol += 1
-
-        return tower + 5*towMax+ 5*towIsol
-
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
         to the board, player and time left provided as input.
