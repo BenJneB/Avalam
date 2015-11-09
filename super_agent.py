@@ -180,7 +180,7 @@ class Agent:
         """
         board=state[0]
         tower=0
-        towMax=0
+        towMax = 0
         towIsol=0
         for i in range(board.rows):
             for j in range(board.columns):
@@ -221,6 +221,15 @@ class Agent:
                     towIsol+=board.m[i][j]"""
 
         return tower + 5*towMax + 5*towIsol
+
+                if(not board.is_tower_movable(i,j)):
+                	if board.m[i][j] < 0:
+                		towIsol -= 1
+                	elif board.m[i][j] > 0:
+                		towIsol += 1
+
+        return tower + 5*towMax+ 5*towIsol
+
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
         to the board, player and time left provided as input.
