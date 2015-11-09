@@ -28,6 +28,8 @@ class Agent:
     def __init__(self, name="Agent"):
         self.name = name
         self.passed=False
+        self.player=0
+        self.totalTime=0
     
     def successors(self, state):
         """The successors function must return (or yield) a list of
@@ -40,8 +42,54 @@ class Agent:
         board=state[0]
         player=state[1]
         stepnumber=state[2]
+        listAction=[]
+        #print(player,self.player)
+        #print(board.m[6][7])
         for action in board.get_actions():
-            yield (action,(board.clone().play_action(action),(-1)*player,stepnumber+1)) 
+            x1=action[0]
+            x2=action[2]
+            y1=action[1]
+            y2=action[3]
+            n1=board.m[x1][y1]
+            n2=board.m[x2][y2]
+            if (n1 >0 ):
+                s=1
+            else:
+                s=-1
+            number=s*(abs(n1)+abs(n2))
+            if (player == self.player and number == -5 ):
+                continue
+            elif (player == self.player):
+                for i in range(x2-1,x2+2):
+                    for j in range(y2-1,y2+2):
+                        n3=board.m[i][j]
+                        if n3>0:
+                            s2=1
+                        else:
+                            s2=-1
+                        number2=s2*(abs(n3)+abs(number))
+                        
+            else:
+                new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
+                listAction.append(new)
+                yield new
+         
+        if len(listAction)== 0 :
+            #for e in listAction:
+            #    yield e
+        #else:
+            for e in board.get_actions():
+                yield e
+
+        """for e in listAction:
+            yield e
+        else:
+            if player < 0:
+                listF=sorted(listAction,key=lambda st:self.evaluate(st[1]),reverse=True)
+            else:
+                listF=sorted(listAction,key=lambda st:self.evaluate(st[1]))
+            for e in listF:
+                yield e"""
         """board=state[0]
         player=state[1]
         stepnumber=state[2]
@@ -114,13 +162,13 @@ class Agent:
         board=state[0]
         stepnumber=state[2]
         maxt=2
-        if stepnumber>=13 and stepnumber < 16:
+        if stepnumber>=15 and stepnumber < 18:
             maxd=3
-        elif stepnumber >= 16 and stepnumber < 20:
+        elif stepnumber >= 18 and stepnumber < 22:
             maxd=4
-        elif stepnumber >=20 and stepnumber < 25:
+        elif stepnumber >=22 and stepnumber < 27:
             maxd=5
-        elif stepnumber >= 25:
+        elif stepnumber >= 27:
             maxd=10
         if board.is_finished() or depth >= maxt:
             return True
@@ -150,8 +198,12 @@ class Agent:
                 number=abs(board.m[i][j])
                 countNeigh=0
                 countPoss=0
-                if(not board.is_tower_movable(i,j)):
-                    towIsol+=board.m[i][j]
+                if(not board.is_tower_movable(i,j) and not(abs(board.m[i][j])==5)):
+                    if board.m[i][j] < 0:
+                        towIsol -= 1
+                    elif board.m[i][j] > 0:
+                        towIsol += 1
+                        """towIsol+=board.m[i][j]"""
                 """for k in range(i-1,i+2):
                     for l in range(j-1,j+2):
                         """"""new X Y in bounds and it is a tower (not empty) with less than 5 pion""""""
@@ -168,7 +220,7 @@ class Agent:
                 if (countNeigh==0 or countPoss==0):
                     towIsol+=board.m[i][j]"""
 
-        return tower + 5*towMax + 2.5*towIsol
+        return tower + 5*towMax + 5*towIsol
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
         to the board, player and time left provided as input.
@@ -180,10 +232,18 @@ class Agent:
             return (3,3,4,3)
         if self.passed==False and step==2:
             return (4,3,3,3)"""
+        start_time = time.time() 
+        self.player=player
         self.time_left = time_left
         newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
         state = (newBoard, player, step)
-        return minimax.search(state, self)
+        result=minimax.search(state,self)
+        interval = time.time() - start_time
+        self.totalTime+=interval
+
+        print('Decision Time:', interval )
+        print('Total time:',self.totalTime)
+        return result
 
 
 
