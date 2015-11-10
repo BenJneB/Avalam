@@ -193,45 +193,53 @@ class Agent:
         tower=0
         towMax=0
         towIsol=0
+        towOne=0
+        towTwo=0
+        towThree=0
+        towFour=0
         for i in range(board.rows):
             for j in range(board.columns):
                 """number of tower for each player"""
-                if board.m[i][j] < 0:
-                    tower -= 1
-                elif board.m[i][j] > 0:
-                    tower += 1
+                tow=board.m[i][j]
 
-                """number of tower (height:5) for each player"""
-                if board.m[i][j] == -5:
-                    towMax -= 1
-                elif board.m[i][j] == 5:
-                    towMax += 1
-                number=abs(board.m[i][j])
-                countNeigh=0
-                countPoss=0
-                if(not board.is_tower_movable(i,j) and not(abs(board.m[i][j])==5)):
-                    if board.m[i][j] < 0:
-                        towIsol -= 1
-                    elif board.m[i][j] > 0:
-                        towIsol += 1
-                        """towIsol+=board.m[i][j]"""
-                """for k in range(i-1,i+2):
-                    for l in range(j-1,j+2):
-                        """"""new X Y in bounds and it is a tower (not empty) with less than 5 pion""""""
-                        if (k>=0 and k<=board.rows-1 and l>=0 and l<=board.columns-1):
-                            if (board.m[k][l]!=0 and abs(board.m[k][l])!=5):
-                                if (k!=i and l!=j):
-                                    """"""count the number of neighbour""""""
-                                    countNeigh+=1
-                                    number2=abs(board.m[k][l])
-                                    if (number+number2<=5):
-                                        """"""count the number of possible move to have a tower""""""
-                                        countPoss+=1
+                if tow !=0 :
+                    number=abs(tow)
+                    s=tow/number
+                    if tow < 0:
+                        tower -= 1
+                        if tow == -5 :
+                            towMax-=1
+                    elif tow > 0:
+                        tower += 1
+                        if tow == 5 :
+                            towMax+=1
 
-                if (countNeigh==0 or countPoss==0):
-                    towIsol+=board.m[i][j]"""
 
-        return tower + 5*towMax + 5*towIsol
+                    if(not board.is_tower_movable(i,j) and not(number==5)):
+                        if tow < 0:
+                            towIsol -= 1
+                        elif tow > 0:
+                            towIsol += 1
+                        if number == 1:
+                            towOne+=s*2
+                        elif number == 2:
+                            towTwo+=s*4
+                        elif number == 3:
+                            towThree+=s*6
+                        else:
+                            towFour+=s*8
+                    elif(board.is_tower_movable(i,j) and not(number==5)):
+                        if number == 1:
+                            towOne+=s
+                        elif number == 2:
+                            towTwo+=s*2
+                        elif number == 3:
+                            towThree+=s*3
+                        else:
+                            towFour+=s*4
+        towTot=towOne+towTwo+towThree+towFour
+        return tower + 5*towMax + 5*towIsol + towTot
+
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
         to the board, player and time left provided as input.
