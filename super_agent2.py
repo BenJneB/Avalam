@@ -43,83 +43,25 @@ class Agent:
         player=state[1]
         stepnumber=state[2]
         
-        def f(state):
+        def compareState(state):
             return self.evaluate(state[1])
 
         fringe = None 
         if player == self.player:
-            fringe = PriorityQueue(f,max)
+            fringe = PriorityQueue(compareState,max)
         else:
-            fringe = PriorityQueue(f,min)
+            fringe = PriorityQueue(compareState,min)
 
         for action in board.get_actions():
             fringe.append((action,(board.clone().play_action(action),(-1)*player,stepnumber+1)))
 
-        yield fringe.pop()
-        """board=state[0]
-        player=state[1]
-        stepnumber=state[2]
-        allMove=[]
-        for action in board.get_actions():
-            x1=action[0]
-            x2=action[2]
-            y1=action[1]
-            y2=action[3]
-            n1=board.m[x1][y1]
-            n2=board.m[x2][y2]
-            if (n1 >0 ):
-                s=1
-            else:
-                s=-1
-            """"""if (s<0 and player>0) or (s>0 and player<0):
-                continue""""""
-
-            """"""print("player",player)
-            print("n1",n1)""""""
-            number=s*(abs(n1)+abs(n2))
-            """"""if((number==5 and player>0) or (number==-5 and player<0) or abs(number)<5):
-                allMove.append(action)
-                continue""""""
-            if((number==5 and player<0) or (number==-5 and player >0)):
-                continue
-            allMove.append(action)
-            """ """if ((number<0 and player<0) or (number >0 and player >0)):
-                countGood=0
-                for i in range(x2-1,x2+2):
-                    for j in range(y2-1,y2+2):
-                        if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and (i!=x1 and j!=y1) and (i!=x2 and j!=y2)):
-                            n3=board.m[i][j]
-                            if n3>0:
-                                s2=1
-                            else:
-                                s2=-1
-                            number2=s2*(abs(n3)+abs(number))
-                            if ((number2>0 and player<0) or (number2<0 and player>0)):
-                                countGood+=1
-                if (countGood==0):
-                    allMove.append(action)""""""
-        semFinL=[]
-        inf = float("inf")
-        curValA=(-inf)
-        curValB=inf
-        if (len(allMove)>0):
-            for move in allMove:
-                temp=self.evaluate((board.clone().play_action(move),(-1)*player,stepnumber+1))
-                if(player>0 and curValA<temp):
-                    print("alphabetter",curValA,temp)
-                    curValA=temp
-                    semFinL.insert(0,(move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
-                elif(player<0 and curValB>temp):
-                    curValB=temp
-                    semFinL.insert(0,(move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
-                else:
-                    semFinL.append((move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
+        if(10 < len(fringe)):
+            length = 10
         else:
-            for move in board.get_actions():
-                semFinL.append((move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
-        for e in semFinL:
-            yield e"""
-        """OBLIGE DE FAIRE CLONE????"""
+            length = len(fringe)
+        while length != 0:
+            yield fringe.pop()
+            length -= 1
 
     def cutoff(self, state, depth):
         """The cutoff function returns true if the alpha-beta/minimax
@@ -161,12 +103,12 @@ class Agent:
                     towMax -= 1
                 elif board.m[i][j] == 5:
                     towMax += 1
-
-                if(not board.is_tower_movable(i,j)):
-                	if board.m[i][j] < 0:
-                		towIsol -= 1
-                	elif board.m[i][j] > 0:
-                		towIsol += 1
+                    
+                if(not board.is_tower_movable(i,j) and not(abs(board.m[i][j])==5)):
+                    if board.m[i][j] < 0:
+                        towIsol -= 1
+                    elif board.m[i][j] > 0:
+                        towIsol += 1
 
         return tower + 5*towMax+ 5*towIsol
 
