@@ -53,15 +53,51 @@ class Agent:
             fringe = PriorityQueue(compareState,min)
 
         for action in board.get_actions():
-            fringe.append((action,(board.clone().play_action(action),(-1)*player,stepnumber+1)))
+            x1=action[0]
+            x2=action[2]
+            y1=action[1]
+            y2=action[3]
+            n1=board.m[x1][y1]
+            n2=board.m[x2][y2]
+            if (n1 >0 ):
+                s=1
+            else:
+                s=-1
+            number=s*(abs(n1)+abs(n2))
+            if (player == self.player and number == -5 ):
+                continue
+            elif (player == self.player):
+                bad=False
+                for i in range(x2-1,x2+2):
+                    for j in range(y2-1,y2+2):
+                        if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and (i!=x1 and j!=y1) and (i!=x2 and j!=y2)):
+                            n3=board.m[i][j]
+                            if n3>0:
+                                s2=1
+                            else:
+                                s2=-1
+                            number2=s2*(abs(n3)+abs(number))
+                            if (number2 == -5):
+                                bad=True
+                if (bad==True):
+                    continue
+                else:
+                    new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
+                    fringe.append(new)   
 
-        if(10 < len(fringe)):
-            length = 10
+        if len(fringe)== 0:
+            for e in board.get_actions():
+                yield (e,(board.clone().play_action(action),(-1)*player,stepnumber+1))
         else:
-            length = len(fringe)
-        while length != 0:
-            yield fringe.pop()
-            length -= 1
+            if(20 < len(fringe)):
+                length = 20
+            else:
+                length = len(fringe)
+            while length != 0:
+                yield fringe.pop()
+                length -= 1
+
+
 
     def cutoff(self, state, depth):
         """The cutoff function returns true if the alpha-beta/minimax
