@@ -31,6 +31,11 @@ class Agent:
         self.player=0
         self.totalTime=0
     
+    def abmax(self, move1,move2):
+        return self.evaluate(move1[0])- self.evaluate(move2[0])
+    
+    def abmin(self, move1,move2):
+        return -(self.evaluate(move1[0])-self.evaluate(move2[0]))
     def successors(self, state):
         """The successors function must return (or yield) a list of
         pairs (a, s) in which a is the action played to reach the
@@ -62,110 +67,29 @@ class Agent:
             else:
                 new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
                 listAction.append(new)
-                yield new
-            """elif (player == self.player):
-                bad=False
-                for i in range(x2-1,x2+2):
-                    for j in range(y2-1,y2+2):
-                        if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and (i!=x1 and j!=y1) and (i!=x2 and j!=y2)):
-                            n3=board.m[i][j]
-                            if n3>0:
-                                s2=1
-                            else:
-                                s2=-1
-                            number2=s2*(abs(n3)+abs(number))
-                            if (number2 == -5):
-                                bad=True
-                if (bad==True):
-                    continue
-                else:
-                    new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
-                    listAction.append(new)
-                    yield new
-            """
-
          
         if len(listAction)== 0 :
-            #for e in listAction:
-            #    yield e
-        #else:
+
+            listTemp=[]
             for e in board.get_actions():
                 new=(e,(board.clone().play_action(e),(-1)*player,stepnumber+1))
-                yield new
-
-        """for e in listAction:
-            yield e
-        else:
-            if player < 0:
-                listF=sorted(listAction,key=lambda st:self.evaluate(st[1]),reverse=True)
+                listTemp.append(new)
+            if player==self.player:
+                listF=sorted(listTemp,key=lambda a:self.evaluate(a[1]),reverse=True)
+                for e in listF:
+                    yield e
             else:
-                listF=sorted(listAction,key=lambda st:self.evaluate(st[1]))
-            for e in listF:
-                yield e"""
-        """board=state[0]
-        player=state[1]
-        stepnumber=state[2]
-        allMove=[]
-        for action in board.get_actions():
-            x1=action[0]
-            x2=action[2]
-            y1=action[1]
-            y2=action[3]
-            n1=board.m[x1][y1]
-            n2=board.m[x2][y2]
-            if (n1 >0 ):
-                s=1
-            else:
-                s=-1
-            """"""if (s<0 and player>0) or (s>0 and player<0):
-                continue""""""
-
-            """"""print("player",player)
-            print("n1",n1)""""""
-            number=s*(abs(n1)+abs(n2))
-            """"""if((number==5 and player>0) or (number==-5 and player<0) or abs(number)<5):
-                allMove.append(action)
-                continue""""""
-            if((number==5 and player<0) or (number==-5 and player >0)):
-                continue
-            allMove.append(action)
-            """ """if ((number<0 and player<0) or (number >0 and player >0)):
-                countGood=0
-                for i in range(x2-1,x2+2):
-                    for j in range(y2-1,y2+2):
-                        if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and (i!=x1 and j!=y1) and (i!=x2 and j!=y2)):
-                            n3=board.m[i][j]
-                            if n3>0:
-                                s2=1
-                            else:
-                                s2=-1
-                            number2=s2*(abs(n3)+abs(number))
-                            if ((number2>0 and player<0) or (number2<0 and player>0)):
-                                countGood+=1
-                if (countGood==0):
-                    allMove.append(action)""""""
-        semFinL=[]
-        inf = float("inf")
-        curValA=(-inf)
-        curValB=inf
-        if (len(allMove)>0):
-            for move in allMove:
-                temp=self.evaluate((board.clone().play_action(move),(-1)*player,stepnumber+1))
-                if(player>0 and curValA<temp):
-                    print("alphabetter",curValA,temp)
-                    curValA=temp
-                    semFinL.insert(0,(move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
-                elif(player<0 and curValB>temp):
-                    curValB=temp
-                    semFinL.insert(0,(move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
-                else:
-                    semFinL.append((move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
+                listF=sorted(listTemp,key=lambda a:self.evaluate(a[1]))
+                for e in listF:
+                    yield e
         else:
-            for move in board.get_actions():
-                semFinL.append((move,(board.clone().play_action(move),(-1)*player,stepnumber+1)))
-        for e in semFinL:
-            yield e"""
-        """OBLIGE DE FAIRE CLONE????"""
+            if player==self.player:
+                listF=sorted(listAction, key=lambda a: self.evaluate(a[1]),reverse=True)
+                for e in listF:
+                    yield e
+            else:
+                listF=sorted(listAction,key=lambda a:self.evaluate(a[1]))
+                return listF
 
     def cutoff(self, state, depth):
         """The cutoff function returns true if the alpha-beta/minimax
@@ -217,29 +141,29 @@ class Agent:
 
 
                     if(not board.is_tower_movable(i,j) and not(number==5)):
-                        if tow < 0:
-                            towIsol -= 1
-                        elif tow > 0:
-                            towIsol += 1
+                        #if tow < 0:
+                        #    towIsol -= 1
+                        #elif tow > 0:
+                        #    towIsol += 1
                         if number == 1:
-                            towOne+=s*2
+                            towIsol+=s*8
                         elif number == 2:
-                            towTwo+=s*4
+                            towIsol+=s*6
                         elif number == 3:
-                            towThree+=s*6
+                            towIsol+=s*4
                         else:
-                            towFour+=s*8
+                            towIsol+=s*2
                     elif(board.is_tower_movable(i,j) and not(number==5)):
                         if number == 1:
-                            towOne+=s
+                            towOne+=s*4
                         elif number == 2:
-                            towTwo+=s*2
+                            towTwo+=s*3
                         elif number == 3:
-                            towThree+=s*3
+                            towThree+=s*2
                         else:
-                            towFour+=s*4
+                            towFour+=s
         towTot=towOne+towTwo+towThree+towFour
-        return tower + 5*towMax + 5*towIsol + towTot
+        return tower + 10*towMax + 5*towIsol + towTot
 
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
