@@ -97,13 +97,13 @@ class Agent:
         """
         board=state[0]
         stepnumber=state[2]
-        maxt=2
-        if stepnumber>=12:
-            maxt=3
-        elif stepnumber >= 19:
+        maxt=5
+        if stepnumber>=12 and stepnumber <19:
             maxt=4
+        elif stepnumber >= 19 and stepnumber <27:
+            maxt=3
         elif stepnumber >=27:
-            maxt=5
+            maxt=2
         elif stepnumber >= 27:
             maxd=10
         if board.is_finished() or depth >= maxt:
@@ -146,13 +146,13 @@ class Agent:
                         #elif tow > 0:
                         #    towIsol += 1
                         if number == 1:
-                            towIsol+=s*8
+                            towIsol+=s*5
                         elif number == 2:
-                            towIsol+=s*6
+                            towIsol+=s*5
                         elif number == 3:
-                            towIsol+=s*4
+                            towIsol+=s*5
                         else:
-                            towIsol+=s*2
+                            towIsol+=s*5
                     elif(board.is_tower_movable(i,j) and not(number==5)):
                         if number == 1:
                             towOne+=s*4
@@ -163,7 +163,7 @@ class Agent:
                         else:
                             towFour+=s
         towTot=towOne+towTwo+towThree+towFour
-        return tower + 10*towMax + 5*towIsol + towTot
+        return tower + 5*towMax + towIsol + towTot
 
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
