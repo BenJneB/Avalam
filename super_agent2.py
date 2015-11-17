@@ -56,7 +56,6 @@ class Agent:
             if player==self.player:
                 listF=sorted(listTemp,key=lambda a:self.evaluate(a[1]),reverse=True)
                 for e in listF:
-                    print(self.evaluate(e[1]))
                     yield e
             else:
                 listF=sorted(listTemp,key=lambda a:self.evaluate(a[1]))
@@ -108,7 +107,7 @@ class Agent:
                 if tow !=0 :
                     n1=abs(tow)
                     s=tow/n1
-
+                    check=False
                     for k in range(i-1,i+2):
                         for h in range(j-1,j+2):
                             if (k>=0 and k<=board.rows-1 and h>=0 and h<=board.columns-1) and not(k==i and h==j):
@@ -117,6 +116,8 @@ class Agent:
                                     s2 = n2/abs(n2)
                                     number=(abs(n2)+n1)
                                     if (number == 5):
+                                        if s2 < 0 :
+                                            check=True
                                         towNextStep+=s2*50
 
                     if tow < 0:
@@ -131,15 +132,15 @@ class Agent:
                         else:
                             towIsol+=s*75
 
-                    elif(board.is_tower_movable(i,j) and not(number==5)):
+                    elif(board.is_tower_movable(i,j) and (not check)):
                         if n1 == 1:
-                            towOne+=s*5
+                            towOne+=s*20
                         elif n1 == 2:
-                            towTwo+=s*10
+                            towTwo+=s*15
                         elif n1 == 3:
-                            towThree+=s*15
+                            towThree+=s*10
                         else:
-                            towFour+=s*20
+                            towFour+=s*5
 
         towTot=towOne+towTwo+towThree+towFour
         return tower + towIsol + towTot +towNextStep
@@ -241,11 +242,12 @@ class Agent:
             return (3,3,4,3)
         if self.passed==False and step==2:
             return (4,3,3,3)"""
-        start_time = time.time() 
+
         self.player=player
         self.time_left = time_left
         newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
         state = (newBoard, player, step)
+        start_time = time.time() 
         result=minimax.search(state,self)
         #print('towerDifferentColourFilter =', self.towerDifferentColourFilter(player,board,action))
         interval = time.time() - start_time
