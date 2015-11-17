@@ -134,13 +134,13 @@ class Agent:
 
                     elif(board.is_tower_movable(i,j) and (not check)):
                         if n1 == 1:
-                            towOne+=s*20
+                            towOne+=s*5
                         elif n1 == 2:
-                            towTwo+=s*15
+                            towTwo+=s*40
                         elif n1 == 3:
-                            towThree+=s*10
+                            towThree+=s*15
                         else:
-                            towFour+=s*5
+                            towFour+=s*20
 
         towTot=towOne+towTwo+towThree+towFour
         return tower + towIsol + towTot +towNextStep
