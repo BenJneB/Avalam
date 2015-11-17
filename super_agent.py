@@ -57,10 +57,7 @@ class Agent:
             y2=action[3]
             n1=board.m[x1][y1]
             n2=board.m[x2][y2]
-            if (n1 >0 ):
-                s=1
-            else:
-                s=-1
+            s=n1/abs(n1)
             number=s*(abs(n1)+abs(n2))
             if (player == self.player and number == -5 ):
                 continue
@@ -97,16 +94,16 @@ class Agent:
         """
         board=state[0]
         stepnumber=state[2]
-        maxt=5
-        if stepnumber>=12 and stepnumber <19:
-            maxt=4
-        elif stepnumber >= 19 and stepnumber <27:
+        maxv=2
+        if stepnumber>=17 and stepnumber <22:
             maxt=3
+        elif stepnumber >= 22 and stepnumber <27:
+            maxt=4
         elif stepnumber >=27:
-            maxt=2
+            maxt=5
         elif stepnumber >= 27:
             maxd=10
-        if board.is_finished() or depth >= maxt:
+        if board.is_finished() or depth >= maxv:
             return True
         return False
 
@@ -146,22 +143,22 @@ class Agent:
                         #elif tow > 0:
                         #    towIsol += 1
                         if number == 1:
-                            towIsol+=s*5
+                            towIsol+=s*40
                         elif number == 2:
-                            towIsol+=s*5
+                            towIsol+=s*20
                         elif number == 3:
-                            towIsol+=s*5
+                            towIsol+=s*10
                         else:
-                            towIsol+=s*5
+                            towIsol+=s*2
                     elif(board.is_tower_movable(i,j) and not(number==5)):
                         if number == 1:
-                            towOne+=s*4
+                            towOne+=s*20
                         elif number == 2:
-                            towTwo+=s*3
+                            towTwo+=s*10
                         elif number == 3:
-                            towThree+=s*2
+                            towThree+=s*5
                         else:
-                            towFour+=s
+                            towFour+=s*1
         towTot=towOne+towTwo+towThree+towFour
         return tower + 5*towMax + towIsol + towTot
 

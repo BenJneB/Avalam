@@ -173,7 +173,7 @@ class Agent:
         """
         board=state[0]
         stepnumber=state[2]
-        maxt=2
+        maxv=2
         if stepnumber>=12:
             maxt=3
         elif stepnumber >= 19:
@@ -182,7 +182,7 @@ class Agent:
             maxt=5
         elif stepnumber >= 27:
             maxd=10
-        if board.is_finished() or depth >= maxt:
+        if board.is_finished() or depth >= maxv:
             return True
         return False
 

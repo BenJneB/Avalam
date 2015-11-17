@@ -59,10 +59,7 @@ class Agent:
             y2=action[3]
             n1=board.m[x1][y1]
             n2=board.m[x2][y2]
-            if (n1 >0 ):
-                s=1
-            else:
-                s=-1
+            s=n1/abs(n1)
             number=s*(abs(n1)+abs(n2))
             if (player == self.player and number == -5 ):
                 continue
