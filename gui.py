@@ -26,6 +26,7 @@ import threading
 from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer, SimpleSSLWebSocketServer
 from optparse import OptionParser
 from game import Viewer, Game
+import super_agent2
 
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
@@ -249,6 +250,7 @@ class WebViewer(Viewer):
     print("Step", step, "- Player", player, "is playing")
 
   def update(self, step, action, player):
+    print("Step", step, "- Player", player, "has played", action)
     print("Step", step, "- Player", player, "has played", action)
     acknowledgementEvent.clear()
     self.server.update(step, action, player)

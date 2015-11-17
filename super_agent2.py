@@ -107,46 +107,45 @@ class Agent:
                 tow=board.m[i][j]
 
                 if tow !=0 :
-                    number=abs(tow)
-                    s=tow/number
+                    n1=abs(tow)
+                    s=tow/n1
+
+                    for k in range(i-1,i+2):
+                        for h in range(j-1,j+2):
+                            if (k>=0 and k<=board.rows-1 and h>=0 and h<=board.columns-1) and not(k==i and h==j):
+                                n2=board.m[k][h]
+                                if(n2!=0):
+                                    s2 = n2/abs(n2)
+                                    number=(abs(n2)+n1)
+                                    if (number == 5):
+                                        towNextStep+=s2*50
+
                     if tow < 0:
                         tower -= 1
-
-                        for k in range(i-1,i+2):
-                            for h in range(j-1,j+2):
-                                if (k>=0 and k<=board.rows-1 and h>=0 and h<=board.columns-1) and (k!=i and h!=j):
-                                    n3=board.m[k][h]
-                                    if n3>0:
-                                        s2=1
-                                    else:
-                                        s2=-1
-                                    number2=(abs(n3)+number)
-                                    if (number2 == 5):
-                                        towNextStep+=s2*50
                                         
                     elif tow > 0:
                         tower += 1
 
                     if(not board.is_tower_movable(i,j)):
-                        if number == 5:
+                        if n1 == 5:
                             towIsol+=s*100
                         else:
                             towIsol+=s*75
 
                     elif(board.is_tower_movable(i,j) and not(number==5)):
-                        if number == 1:
+                        if n1 == 1:
                             towOne+=s*5
-                        elif number == 2:
+                        elif n1 == 2:
                             towTwo+=s*10
-                        elif number == 3:
+                        elif n1 == 3:
                             towThree+=s*15
                         else:
                             towFour+=s*20
 
         towTot=towOne+towTwo+towThree+towFour
-        return tower + towIsol + towTot
+        return tower + towIsol + towTot +towNextStep
 
-    def BackUpFilter(self,player,board,action):
+    def BackUpFilter(self,player,board,action,check):
         x1=action[0]
         x2=action[2]
         y1=action[1]
@@ -154,17 +153,30 @@ class Agent:
         n1=board.m[x1][y1]
         n2=board.m[x2][y2]
         isolTower = False
+        s=n1/abs(n1)
+        number = s*(abs(n1)+abs(n2)) 
+        if(number == 5):
+            return True
         for i in range(x2-1,x2+2):
             for j in range(y2-1,y2+2):
-                if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and (i!=x1 and j!=y1) and (i!=x2 and j!=y2)):
+                if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and not (i==x1 and j==y1) and not (i==x2 and j==y2)):
                     n3=board.m[i][j]
-                    if n3>0:
-                        return True
-                    else:
-                        board.m[i][j] = 0
-                        if (board.is_tower_movable(x2,y2)):
-                            isolTower = True
-                        board.m[i][j] = n3
+                    if(n3!=0):
+                        s2 = n3/abs(n3)
+                        if n3>0:
+                            return True
+                        else:
+                            board.m[i][j] = 0
+                            board.m[x1][y1] = 0
+                            board.m[x2][y2] = s2*(abs(number)+abs(n3))
+                            if(check):
+                                print(board.m[x2][y2],i,j)
+                                print(not board.is_tower_movable(x2,y2))
+                            if (not board.is_tower_movable(x2,y2)):
+                                isolTower = True
+                            board.m[x1][y1] = n1
+                            board.m[x2][y2] = n2
+                            board.m[i][j] = n3
         if(isolTower):                
             return False
         else:
@@ -212,7 +224,7 @@ class Agent:
         #print('noBad5Filter =', self.noBad5Filter(player,board,action))
         #print('towerDifferentColourFilter =', self.towerDifferentColourFilter(player,board,action))
         #print('BackUpFilter =', self.BackUpFilter(player,board,action))
-        if(self.noBad5Filter(player,board,action) and self.towerDifferentColourFilter(player,board,action) and self.BackUpFilter(player,board,action)):
+        if(self.noBad5Filter(player,board,action) and self.towerDifferentColourFilter(player,board,action) and self.BackUpFilter(player,board,action,False)):
             new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
             listState.append(new)
 
@@ -236,7 +248,8 @@ class Agent:
         state = (newBoard, player, step)
         result=minimax.search(state,self)
         #print('towerDifferentColourFilter =', self.towerDifferentColourFilter(player,board,action))
-        #print('BackUpFilter =', self.BackUpFilter(player,board,action))
+        if(step == 16):
+            print('BackUpFilter =', self.BackUpFilter(player,newBoard,result,True))
 
 
         interval = time.time() - start_time
