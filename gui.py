@@ -251,7 +251,6 @@ class WebViewer(Viewer):
 
   def update(self, step, action, player):
     print("Step", step, "- Player", player, "has played", action)
-    print("Step", step, "- Player", player, "has played", action)
     acknowledgementEvent.clear()
     self.server.update(step, action, player)
     acknowledgementEvent.wait()

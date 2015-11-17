@@ -179,11 +179,7 @@ class Agent:
         newBoard = avalam.Board(board.get_percepts(player==avalam.PLAYER2))
         state = (newBoard, player, step)
         result=minimax.search(state,self)
-        interval = time.time() - start_time
-        self.totalTime+=interval
 
-        print('Decision Time:', interval )
-        print('Total time:',self.totalTime)
         return result
 
 
