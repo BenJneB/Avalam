@@ -40,6 +40,7 @@ class Agent:
         p is the player to play the next move and st is the next
         step number.
         """
+
         board=state[0]
         player=state[1]
         stepnumber=state[2]
@@ -56,7 +57,6 @@ class Agent:
             if player==self.player:
                 listF=sorted(listTemp,key=lambda a:self.evaluate(a[1]),reverse=True)
                 for e in listF:
-                    print(self.evaluate(e[1]))
                     yield e
             else:
                 listF=sorted(listTemp,key=lambda a:self.evaluate(a[1]))
@@ -77,17 +77,17 @@ class Agent:
         """
         board=state[0]
         stepnumber=state[2]
-        maxt=2
+        maxv=2
         if stepnumber>=12 and stepnumber < 19:
             maxt=3
         elif stepnumber >= 19 and stepnumber < 27:
             maxt=4
         elif stepnumber >=27:
             maxt=5
-        if board.is_finished() or depth >= maxt:
+        if board.is_finished() or depth >= maxv:
             return True
         return False
-
+        
     def evaluate(self, state):
         """The evaluate function must return an integer value
         representing the utility function of the board.
@@ -131,7 +131,7 @@ class Agent:
                         else:
                             towIsol+=s*75
 
-                    elif(board.is_tower_movable(i,j) and not(number==5)):
+                    elif(board.is_tower_movable(i,j)):
                         if n1 == 1:
                             towOne+=s*5
                         elif n1 == 2:
@@ -144,13 +144,18 @@ class Agent:
         towTot=towOne+towTwo+towThree+towFour
         return tower + towIsol + towTot +towNextStep
 
-    def BackUpFilter(self,player,board,action,check):
+    def BackUpFilter(self,player,board,action):
+        if(player == self.player):
+            percept_board=avalam.Board(board.get_percepts())
+        else:
+            percept_board=avalam.Board(board.get_percepts(True))
+
         x1=action[0]
         x2=action[2]
         y1=action[1]
         y2=action[3]
-        n1=board.m[x1][y1]
-        n2=board.m[x2][y2]
+        n1=percept_board.m[x1][y1]
+        n2=percept_board.m[x2][y2]
         isolTower = False
         s=n1/abs(n1)
         number = s*(abs(n1)+abs(n2)) 
@@ -159,46 +164,47 @@ class Agent:
         for i in range(x2-1,x2+2):
             for j in range(y2-1,y2+2):
                 if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and not (i==x1 and j==y1) and not (i==x2 and j==y2)):
-                    n3=board.m[i][j]
+                    n3=percept_board.m[i][j]
                     if(n3!=0):
                         s2 = n3/abs(n3)
-                        number2=s2*(abs(number)+abs(n3))
-                        if n3>0 :
+                        if n3>0:
                             return True
                         else:
-                            board.m[i][j] = 0
-                            board.m[x1][y1] = 0
-                            board.m[x2][y2] = number2
-                            if(check):
-                                print(board.m[x2][y2],i,j)
-                                print(not board.is_tower_movable(x2,y2))
-                            if (not board.is_tower_movable(x2,y2)):
+                            percept_board.m[i][j] = 0
+                            percept_board.m[x1][y1] = 0
+                            percept_board.m[x2][y2] = s2*(abs(number)+abs(n3))
+                            if (not percept_board.is_tower_movable(x2,y2)):
                                 isolTower = True
-                            board.m[x1][y1] = n1
-                            board.m[x2][y2] = n2
-                            board.m[i][j] = n3
+                            percept_board.m[x1][y1] = n1
+                            percept_board.m[x2][y2] = n2
+                            percept_board.m[i][j] = n3
         if(isolTower):                
             return False
         else:
             return True
 
     def noBad5Filter(self,player,board,action):
+        if(player == self.player):
+            percept_board=avalam.Board(board.get_percepts())
+        else:
+            percept_board=avalam.Board(board.get_percepts(True))
+
         x1=action[0]
         x2=action[2]
         y1=action[1]
         y2=action[3]
-        n1=board.m[x1][y1]
-        n2=board.m[x2][y2]
+        n1=percept_board.m[x1][y1]
+        n2=percept_board.m[x2][y2]
 
         s = n1/abs(n1)
         number=s*(abs(n1)+abs(n2))
-        if (player == self.player and number == -5 ):
-            return False
+        if (number == 5 ):
+            return True
         else:
             for i in range(x2-1,x2+2):
                 for j in range(y2-1,y2+2):
                     if (i>=0 and i<=board.rows-1 and j>=0 and j<=board.columns-1 and not (i==x1 and j==y1) and not (i==x2 and j==y2)):
-                        n3=board.m[i][j]
+                        n3=percept_board.m[i][j]
                         if(n3!=0):
                             s2=n3/abs(n3)
                             number2=s2*(abs(n3)+abs(number))
@@ -208,13 +214,17 @@ class Agent:
         return True
 
     def towerDifferentColourFilter(self,player,board,action):
-        listState = []
+        if(player == self.player):
+            percept_board=avalam.Board(board.get_percepts())
+        else:
+            percept_board=avalam.Board(board.get_percepts(True))
+
         x1=action[0]
         x2=action[2]
         y1=action[1]
         y2=action[3]
-        n1=board.m[x1][y1]
-        n2=board.m[x2][y2]
+        n1=percept_board.m[x1][y1]
+        n2=percept_board.m[x2][y2]
         if(n1 > 0 and n2 < 0):
             return True
         else: 
@@ -224,7 +234,7 @@ class Agent:
         #print('noBad5Filter =', self.noBad5Filter(player,board,action))
         #print('towerDifferentColourFilter =', self.towerDifferentColourFilter(player,board,action))
         #print('BackUpFilter =', self.BackUpFilter(player,board,action))
-        if(self.noBad5Filter(player,board,action) and self.towerDifferentColourFilter(player,board,action) and self.BackUpFilter(player,board,action,False)):
+        if(self.noBad5Filter(player,board,action) and self.towerDifferentColourFilter(player,board,action) and self.BackUpFilter(player,board,action)):
             new=(action,(board.clone().play_action(action),(-1)*player,stepnumber+1))
             listState.append(new)
 
@@ -248,6 +258,8 @@ class Agent:
         state = (newBoard, player, step)
         result=minimax.search(state,self)
         #print('towerDifferentColourFilter =', self.towerDifferentColourFilter(player,board,action))
+
+
         interval = time.time() - start_time
         self.totalTime+=interval
 
