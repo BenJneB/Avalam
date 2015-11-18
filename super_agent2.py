@@ -44,9 +44,9 @@ class Agent:
         player=state[1]
         stepnumber=state[2]
         listState = []
-
-        for action in board.get_actions():
-            self.allFilter(player,board,action,stepnumber,listState)
+        if player==self.player:
+            for action in board.get_actions():
+                self.allFilter(player,board,action,stepnumber,listState)
 
         if len(listState) == 0:
             listTemp=[]
@@ -76,14 +76,14 @@ class Agent:
         """
         board=state[0]
         stepnumber=state[2]
-        maxt=2
+        maxv=2
         if stepnumber>=12 and stepnumber < 19:
             maxt=3
         elif stepnumber >= 19 and stepnumber < 27:
             maxt=4
         elif stepnumber >=27:
             maxt=5
-        if board.is_finished() or depth >= maxt:
+        if board.is_finished() or depth >= maxv:
             return True
         return False
 
@@ -216,10 +216,11 @@ class Agent:
         y2=action[3]
         n1=board.m[x1][y1]
         n2=board.m[x2][y2]
-        if(n1 > 0 and n2 < 0):
-            return True
-        else: 
-            return False
+        if player==self.player:
+            if(n1 > 0 and n2 < 0):
+                return True
+            else: 
+                return False
 
     def allFilter(self,player,board,action,stepnumber,listState):
         #print('noBad5Filter =', self.noBad5Filter(player,board,action))
